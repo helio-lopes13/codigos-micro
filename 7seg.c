@@ -2,12 +2,12 @@
 PROGRAMA SIMULAÇÂO DE DISPLAY DE 7 SEGMENTOS PLACA PICGÊNIOS
 AUTOR PROF. FÁBIO TIMBÓ
 */
-#include<18F4550.h>           
+#include<18F4550.h>
 #use delay (clock=20000000)        
 #fuses HS, NOWDT, PUT, BROWNOUT, NOLVP, CPUDIV1 
 
 int conta = 0;
-int digito1, digito2;
+int digito1, digito2, i;
 
 /*Matriz de 10 posições contendo o valor a ser enviado para a porta D a fim de
    mostrar o dígito referente nos displays */
@@ -25,20 +25,31 @@ int digito[10] =
                };
 void main() {
    port_b_pullups(TRUE);
+   output_a(0);
    output_d(0);
+   output_b(0xFF);
    
    while (true) {
-      if (conta <= 16) {
-         digito1 = conta / 10;
-         digito2 = conta % 10;
+      if (input(pin_b0) == 0) {
+         while (conta <= 16) {
+            digito1 = conta / 10;
+            digito2 = conta % 10;
+            
+            for (i = 1; i <= 50; i++) {
+               output_d(digito[digito1]);
+               output_a(0b00010000);
+               delay_ms(10);
+               output_d(digito[digito2]);
+               output_a(0b00100000);
+               delay_ms(10);
+            }
+   
+            conta++;
+         }
          
-         output_d(digito[digito1]);
-         output_a(0b00010000);
-         output_d(digito[digito2]);
-         output_a(0b00100000);
-         
-         delay_ms(1000);
-         conta++;
-      }
+         output_d(0);
+         output_a(0);
+         conta = 0;
+      }   
    }
 }
