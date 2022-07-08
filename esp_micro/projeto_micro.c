@@ -6,8 +6,9 @@
 #use delay (clock=20000000)
 #fuses HS, NOWDT, PUT, BROWNOUT, NOLVP, CPUDIV1
 #use rs232(baud=9600, xmit = PIN_C6, rcv = PIN_C7)
+
 float ad;
-unsigned int32 ad0, b0, b1, n = 0;
+unsigned int32 ad0, b0 = 0, b1 = 0, n = 0;
 boolean led = true, verifica_ad = false, botoes_pressionados = false;
 char caractere;
 
@@ -18,9 +19,6 @@ void processa_caractere(char caractere) {
    if (caractere == 'D') {
       output_low(bit_lampada);
    }
-   
-   verifica_ad = false;
-   botoes_pressionados = false;
 }
 
 #int_timer0
@@ -35,6 +33,9 @@ void trata_t0() {
    
    if (ad0 > 50) {
       verifica_ad = true;
+      output_high(pin_d3);
+   } else {
+      output_low(pin_d3);
    }
    
    b0 = input(botao0);
